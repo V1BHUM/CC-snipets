@@ -1,0 +1,50 @@
+<snippet>
+	<content><![CDATA[
+class Fenwick
+{
+    
+    public:
+    vector<int> ele;
+    int n;
+    vector<int> tree;
+    Fenwick(int n)
+    {
+        this->n = n;
+        ele = vector<int> (n+1);
+        tree = vector<int> (n+1);
+    }
+    
+    void update(int i,int x)
+    {
+        int diff = x - ele[i];
+        ele[i] = x;
+        
+        while(i<=n)
+        {
+            tree[i] += diff;
+            i += i&(-i);
+        }
+    }
+    
+    int sum(int i)
+    {
+        int sum = 0;
+        while(i>0)
+        {
+            sum += tree[i];
+            i -= (i&(-i));
+        }
+        return sum;
+    }
+    
+    int get(int i)
+    {
+        return ele[i];
+    }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>fenwick</tabTrigger> 
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope> 
+</snippet>

@@ -1,0 +1,116 @@
+<snippet>
+	<content><![CDATA[
+template<typename T>
+class SegTree
+{
+    public:
+    T *seg;
+    int n;
+    SegTree(vector<T> arr)
+    {
+        seg = constructST(arr,arr.size());
+        this->n = arr.size();
+    }
+
+    SegTree(){}
+
+    /* Modify This */
+    T pred(T a,T b)
+    {
+        return a+b;
+    }
+
+    T PredUtil(T* st, int ss, int se, int l,
+                int r, int node)
+    {
+        if (l <= ss && r >= se)
+            return st[node];
+
+        /* and modify this*/
+        if (se < l || ss > r)
+            return T();
+
+
+        int mid = getMid(ss, se);
+        return pred(PredUtil(st, ss, mid, l, r,
+                           2 * node + 1),
+                   PredUtil(st, mid + 1, se, l,
+                           r, 2 * node + 2));
+    }
+
+
+    int getMid(int s, int e)
+    {
+        return s + (e - s) / 2;
+    }
+
+    void updateValue(vector<T>& arr, T* st, int ss, int se,
+                     int index, T& value, int node)
+    {
+        if (index < ss || index > se)
+        {
+            cout << "Invalid Input" << endl;
+            return;
+        }
+        if (ss == se)
+        {  
+            arr[index] = value;
+            st[node] = value;
+        }
+        else {
+            int mid = getMid(ss, se);
+            if (index >= ss && index <= mid)
+                updateValue(arr, st,
+                            ss, mid, index,
+                            value, 2 * node + 1);
+            else
+                updateValue(arr,
+                            st, mid + 1, se,
+                            index,
+                            value, 2 * node + 2);
+            st[node] = pred(st[2 * node + 1],
+                       st[2 * node + 2]);
+        }
+    }
+    T getPred(T* st, int n, int l, int r)
+    {
+        return PredUtil(st, 0, n - 1, l, r, 0);
+    }
+    T constructSTUtil(vector<T>& arr, int ss, int se,
+                        T* st, int si)
+    {
+        if (ss == se)
+        {
+            st[si] = arr[ss];
+            return arr[ss];
+        }
+        int mid = getMid(ss, se);
+        st[si] = pred(constructSTUtil(arr, ss, mid, st,
+                                     si * 2 + 1),
+                     constructSTUtil(arr, mid + 1, se,
+                                     st, si * 2 + 2));
+        return st[si];
+    }
+    T* constructST(vector<T>& arr, int n)
+    {
+        int x = (int)(ceil(log2(n)));
+        int max_size = 2 * (int)pow(2, x) - 1;
+        T* st = new T[max_size];
+        constructSTUtil(arr, 0, n - 1, st, 0);
+        return st;
+    }
+    T get(int l,int r)
+    {
+        return getPred(seg,n,l,r);
+    }
+    void update(vector<T>& arr,int i,T val)
+    {
+        updateValue(arr,seg,0,n-1,i,val,0);
+    }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>segtree</tabTrigger> 
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope> 
+</snippet>
